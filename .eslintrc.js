@@ -34,6 +34,13 @@ module.exports = {
         "semi": [
             "error",
             "always"
-        ]
+        ],
+        "no-console": 2,
+        "no-trailing-spaces": 2
+    },
+    "settings": {
+        "react": {
+            "version": "detect"
+        }
     }
 };
