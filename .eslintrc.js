@@ -35,7 +35,15 @@ module.exports = {
             "error",
             "always"
         ],
-        "no-console": 2,
+        "no-console": [
+            "error",
+            {
+                "allow": [
+                    "error",
+                    "info"
+                ]
+            }
+        ],
         "no-trailing-spaces": 2
     },
     "settings": {
