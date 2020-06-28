@@ -1,15 +1,6 @@
 const { User } = require("../schema/models");
 
 const AuthenticationService = {
-    deleteUser: id => {
-        return User.findById(id).then(userToDelete => {
-            if(userToDelete && (userToDelete._id == id)){
-                return User.findByIdAndDelete(id);
-            } else {
-                throw new Error("ID parameter does not match returned user's ID");
-            }
-        });
-    },
     registerUser: (user) => {
         const newUser = new User({
             firstName: user.firstName,

@@ -9,16 +9,34 @@ const {
 const UserType = require("../types/userType");
 
 // Services
+const UserService = require("../../services/user");
 const AuthenticationService = require("../../services/authentication");
 
 const UserMutations = {
+    editUser: {
+        type: UserType,
+        args: {
+            id: { type: new GraphQLNonNull(GraphQLID) },
+            firstName: { type: GraphQLString },
+            lastName: { type: GraphQLString },
+            username: { type: GraphQLString },
+            bio: { type: GraphQLString },
+            email: { type: GraphQLString }
+        },
+        resolve(parentValue, args){
+            const { id } = args;
+            delete args.id;
+
+            return UserService.editUser(id, args);
+        }
+    },
     deleteUser: {
         type: UserType,
         args: {
             id: { type: new GraphQLNonNull(GraphQLID) }
         },
         resolve(parentValue, { id }){
-            return AuthenticationService.deleteUser(id);
+            return UserService.deleteUser(id);
         }
     },
     registerUser: {
