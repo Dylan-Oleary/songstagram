@@ -1,5 +1,6 @@
 const graphql = require("graphql");
 const {
+    GraphQLBoolean,
     GraphQLID,
     GraphQLNonNull,
     GraphQLString
@@ -9,8 +10,8 @@ const {
 const UserType = require("../types/userType");
 
 // Services
-const UserService = require("../../services/user");
 const AuthenticationService = require("../../services/authentication");
+const UserService = require("../../services/user");
 
 const UserMutations = {
     editUser: {
@@ -23,11 +24,11 @@ const UserMutations = {
             bio: { type: GraphQLString },
             email: { type: GraphQLString }
         },
-        resolve(parentValue, args){
+        resolve(parentValue, args, req){
             const { id } = args;
             delete args.id;
 
-            return UserService.editUser(id, args);
+            return UserService.editUser(id, args, req);
         }
     },
     deleteUser: {
@@ -35,8 +36,27 @@ const UserMutations = {
         args: {
             id: { type: new GraphQLNonNull(GraphQLID) }
         },
-        resolve(parentValue, { id }){
-            return UserService.deleteUser(id);
+        resolve(parentValue, { id }, req){
+            return UserService.deleteUser(id, req);
+        }
+    },
+    loginUser: {
+        type: GraphQLBoolean,
+        args: {
+            email: { type: new GraphQLNonNull(GraphQLString) },
+            password: { type: new GraphQLNonNull(GraphQLString) }
+        },
+        resolve(parentValue, args, req){
+            return AuthenticationService.loginUser(args, req);
+        }
+    },
+    logoutUser: {
+        type: GraphQLBoolean,
+        args: {
+            email: { type: new GraphQLNonNull(GraphQLString) }
+        },
+        resolve(parentValue, args, req){
+            return AuthenticationService.logoutUser(args, req);
         }
     },
     registerUser: {
@@ -49,7 +69,7 @@ const UserMutations = {
             password: { type: new GraphQLNonNull(GraphQLString) },
             confirmPassword: { type: new GraphQLNonNull(GraphQLString) }
         },
-        resolve(parentValue, args){
+        resolve(parentValue, args, req){
             const newUser = {
                 firstName: args.firstName,
                 lastName: args.lastName,
@@ -59,7 +79,7 @@ const UserMutations = {
                 confirmPassword: args.confirmPassword
             };
 
-            return AuthenticationService.registerUser(newUser);
+            return AuthenticationService.registerUser(newUser, req);
         }
     }
 };

@@ -9,6 +9,8 @@ module.exports = new GraphQLObjectType({
     fields: {
         editUser: UserMutations.editUser,
         deleteUser: UserMutations.deleteUser,
+        loginUser: UserMutations.loginUser,
+        logoutUser: UserMutations.logoutUser,
         registerUser: UserMutations.registerUser
     }
 });
