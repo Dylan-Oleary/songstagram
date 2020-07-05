@@ -6,13 +6,14 @@ const {
     GraphQLObjectType,
     GraphQLString
 } = graphql;
+const { GraphQLDateTime } = require("graphql-iso-date");
 const SpotifyService = require("../../services/spotify");
 
 module.exports = new GraphQLObjectType({
-    name: "TrackType",
+    name: "AlbumType",
     fields: () => {
         const ArtistType = require("./artistType");
-        const AlbumType = require("./albumType");
+        const TrackType = require("./trackType");
 
         return {
             id: { type: GraphQLID },
@@ -25,16 +26,19 @@ module.exports = new GraphQLObjectType({
                     return SpotifyService.getArtists(artistIDs);
                 }
             },
-            album: {
-                type: AlbumType,
-                resolve({ album }){
-                    return SpotifyService.getAlbum(album.id);
+            tracks: {
+                type: new GraphQLList(TrackType),
+                resolve({ id: albumID}){
+                    return SpotifyService.getAlbumTracks(albumID).then(tracks => tracks.items);
                 }
             },
-            duration_ms: { type: GraphQLInt },
+            release_date: { type: GraphQLDateTime },
+            genres: { type: new GraphQLList(GraphQLString) },
+            label: { type: GraphQLString },
+            album_type: { type: GraphQLString },
+            type: { type: GraphQLString },
             popularity: { type: GraphQLInt },
-            uri: { type: GraphQLString },
-            type: { type: GraphQLString }
+            uri: { type: GraphQLString }
         };
     }
 });

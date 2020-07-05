@@ -1,4 +1,5 @@
 const graphql = require("graphql");
+const SpotifyService = require("../../services/spotify");
 const {
     GraphQLID,
     GraphQLInt,
@@ -9,11 +10,21 @@ const {
 
 module.exports = new GraphQLObjectType({
     name: "ArtistType",
-    fields: () => ({
-        id: { type: GraphQLID },
-        name: { type: GraphQLString },
-        genres: { type: new GraphQLList(GraphQLString) },
-        popularity: { type: GraphQLInt },
-        uri: { type: GraphQLString }
-    })
+    fields: () => {
+        const AlbumType = require("./albumType");
+
+        return {
+            id: { type: GraphQLID },
+            name: { type: GraphQLString },
+            albums: {
+                type: new GraphQLList(AlbumType),
+                resolve({ id: artistID }){
+                    return SpotifyService.getAlbumsByArtist(artistID);
+                }
+            },
+            genres: { type: new GraphQLList(GraphQLString) },
+            popularity: { type: GraphQLInt },
+            uri: { type: GraphQLString }
+        };
+    }
 });

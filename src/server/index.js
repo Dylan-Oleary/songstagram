@@ -11,7 +11,7 @@ const app = express();
 const redisClient = redis.createClient();
 
 connectToMongo();
-connectToSpotify();
+if(process.env.NODE_ENV === "production") connectToSpotify();
 
 app.use(session({
     store: new RedisStore({ client: redisClient }),

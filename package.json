@@ -5,7 +5,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon index.js --ignore ./src/client",
+    "dev": "NODE_ENV=development nodemon index.js --ignore ./src/client",
     "lint": "eslint . && echo 'Lint Complete'",
     "precommit-msg": "echo 'Running Pre-Commit Checks...' && exit 0"
   },

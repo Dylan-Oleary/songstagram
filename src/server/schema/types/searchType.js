@@ -6,14 +6,15 @@ const {
     GraphQLString
 } = graphql;
 
-// Types
-const TrackType = require("./trackType");
-
 module.exports = new GraphQLObjectType({
     name: "SearchType",
-    fields: () => ({
-        query: { type: GraphQLString },
-        tracks: { type: new GraphQLList(TrackType) },
-        total: { type: GraphQLInt }
-    })
+    fields: () => {
+        const TrackType = require("./trackType");
+
+        return {
+            query: { type: GraphQLString },
+            tracks: { type: new GraphQLList(TrackType) },
+            total: { type: GraphQLInt }
+        };
+    }
 });
