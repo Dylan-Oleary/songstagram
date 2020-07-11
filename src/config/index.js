@@ -5,15 +5,9 @@ const connectToMongo = async () => await mongoose.connect(process.env.MONGO_URI_
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useFindAndModify: false
-}).catch(error => {
-    console.error(`Error Connecting to MongoDB: ${error}`);
-    process.exit(1);
 });
 
-const connectToSpotify = async () => await SpotifyService.getWebToken().catch(error => {
-    console.error(`Error Connecting to Spotify: ${error}`);
-    process.exit(1);
-});
+const connectToSpotify = async app => await SpotifyService.getWebToken(app);
 
 module.exports = {
     connectToMongo,

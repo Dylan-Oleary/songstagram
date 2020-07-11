@@ -1,6 +1,12 @@
 /* eslint-disable no-console */
-const app = require("./src/server");
+const initializeApp = require("./src");
+const app = initializeApp();
 
-app.listen(4000, () => {
-    console.log("I am listening!");
+app.on("ready", () => {
+    app.listen(3000, () => console.log("Application is running"));
+});
+
+app.on("fail", () => {
+    console.log("Application has failed to start");
+    process.exit(1);
 });

@@ -1,3 +1,4 @@
+/* eslint-disable no-empty-pattern */
 const graphql = require("graphql");
 const {
     GraphQLID,
@@ -19,16 +20,16 @@ module.exports = new GraphQLObjectType({
             name: { type: GraphQLString },
             artists: {
                 type: new GraphQLList(ArtistType),
-                resolve({ artists }){
+                resolve({ artists }, {}, req){
                     const artistIDs = artists.map(artist => artist.id);
 
-                    return SpotifyService.getArtists(artistIDs);
+                    return SpotifyService.getArtists(artistIDs, req);
                 }
             },
             album: {
                 type: AlbumType,
-                resolve({ album }){
-                    return SpotifyService.getAlbum(album.id);
+                resolve({ album }, {}, req){
+                    return SpotifyService.getAlbum(album.id, req);
                 }
             },
             duration_ms: { type: GraphQLInt },

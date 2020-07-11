@@ -43,8 +43,8 @@ module.exports = new GraphQLObjectType({
             args: {
                 id: { type: new GraphQLNonNull(GraphQLID) }
             },
-            resolve(parentValue, { id }){
-                return SpotifyService.getArtist(id);
+            resolve(parentValue, { id }, req){
+                return SpotifyService.getArtist(id, req);
             }
         },
         artists: {
@@ -52,8 +52,8 @@ module.exports = new GraphQLObjectType({
             args: {
                 artistIDs: { type: new GraphQLNonNull(new GraphQLList(GraphQLID)) }
             },
-            resolve(parentValue, { artistIDs }){
-                return SpotifyService.getArtists(artistIDs);
+            resolve(parentValue, { artistIDs }, req){
+                return SpotifyService.getArtists(artistIDs, req);
             }
         },
         // Albums
@@ -62,8 +62,8 @@ module.exports = new GraphQLObjectType({
             args: {
                 id: { type: new GraphQLNonNull(GraphQLID) }
             },
-            resolve(parentValue, { id }){
-                return SpotifyService.getAlbum(id);
+            resolve(parentValue, { id }, req){
+                return SpotifyService.getAlbum(id, req);
             }
         },
         albums: {
@@ -71,8 +71,8 @@ module.exports = new GraphQLObjectType({
             args: {
                 albumIDs: { type: new GraphQLNonNull(new GraphQLList(GraphQLID)) }
             },
-            resolve(parentValue, { albumIDs }){
-                return SpotifyService.getAlbums(albumIDs);
+            resolve(parentValue, { albumIDs }, req){
+                return SpotifyService.getAlbums(albumIDs, req);
             }
         },
         // Tracks
@@ -81,8 +81,8 @@ module.exports = new GraphQLObjectType({
             args: {
                 id: { type: new GraphQLNonNull(GraphQLID) }
             },
-            resolve(parentValue, { id }){
-                return SpotifyService.getTrack(id);
+            resolve(parentValue, { id }, req){
+                return SpotifyService.getTrack(id, req);
             }
         },
         search: {
@@ -90,8 +90,8 @@ module.exports = new GraphQLObjectType({
             args: {
                 query: { type: new GraphQLNonNull(GraphQLString) }
             },
-            resolve(parentValue, { query }){
-                return SpotifyService.search(query);
+            resolve(parentValue, { query }, req){
+                return SpotifyService.search(query, req);
             }
         }
     })
