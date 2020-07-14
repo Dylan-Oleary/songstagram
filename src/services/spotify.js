@@ -74,6 +74,14 @@ const SpotifyService = {
             headers: req.app.get(spotifyWebHeaders)
         }).then(({ data }) => data);
     },
+    getTracks(trackIds, req){
+        return axios.get("https://api.spotify.com/v1/tracks", {
+            params: {
+                ids: trackIds.join(",")
+            },
+            headers: req.app.get(spotifyWebHeaders)
+        }).then(({ data }) => data.tracks);
+    },
     search(query, req){
         return axios.get("https://api.spotify.com/v1/search", {
             params: {

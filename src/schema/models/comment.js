@@ -14,11 +14,7 @@ const CommentSchema = new Schema({
     likes: [{
         type: Schema.Types.ObjectId,
         ref: "Like"
-    }],
-    createdDate: {
-        type: Date,
-        default: Date.now
-    }
+    }]
 }, { timestamps: true });
 
 mongoose.model("Comment", CommentSchema);

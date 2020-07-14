@@ -6,9 +6,13 @@ const PostSchema = new Schema({
         type: String,
         required: true
     },
-    spotifyId: {
+    spotifyTrackID: {
         type: String,
         required: true
+    },
+    isEdited: {
+        type: Boolean,
+        default: false
     },
     user: {
         type: Schema.Types.ObjectId,
@@ -22,11 +26,7 @@ const PostSchema = new Schema({
     likes: [{
         type: Schema.Types.ObjectId,
         ref: "Like"
-    }],
-    createdDate: {
-        type: Date,
-        default: Date.now
-    }
+    }]
 }, { timestamps: true });
 
-mongoose.model("Post", PostSchema);
+module.exports = mongoose.model("Post", PostSchema);

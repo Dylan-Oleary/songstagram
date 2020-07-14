@@ -1,6 +1,7 @@
 const graphql = require("graphql");
 const {
     GraphQLID,
+    GraphQLInt,
     GraphQLList,
     GraphQLObjectType,
     GraphQLNonNull,
@@ -10,11 +11,13 @@ const {
 // Types
 const ArtistType = require("./artistType");
 const AlbumType = require("./albumType");
+const PostType = require("./postType");
 const SearchType = require("./searchType");
 const TrackType = require("./trackType");
 const UserType = require("./userType");
 
 // Services
+const PostService = require("../../services/post");
 const SpotifyService = require("../../services/spotify");
 const UserService = require("../../services/user");
 
@@ -25,16 +28,31 @@ module.exports = new GraphQLObjectType({
         user: {
             type: UserType,
             args: {
-                id: { type: new GraphQLNonNull(GraphQLID) }
+                id: { type: new GraphQLNonNull(GraphQLID) },
+                cursorIndex: { type: GraphQLInt }
             },
-            resolve(parentValue, { id }){
-                return UserService.getUserByID(id);
+            resolve(parentValue, { id, cursorIndex }){
+                return UserService.getUserByID(id, cursorIndex).then(user => {
+                    user.cursorIndex = cursorIndex;
+
+                    return user;
+                });
             }
         },
         users: {
             type: new GraphQLList(UserType),
             resolve(){
                 return UserService.getUsers();
+            }
+        },
+        // Posts
+        post: {
+            type: PostType,
+            args: {
+                id: { type: new GraphQLNonNull(GraphQLID) }
+            },
+            resolve(parentValue, { id }){
+                return PostService.getPostByID(id);
             }
         },
         // Artists
@@ -83,6 +101,15 @@ module.exports = new GraphQLObjectType({
             },
             resolve(parentValue, { id }, req){
                 return SpotifyService.getTrack(id, req);
+            }
+        },
+        tracks: {
+            type: new GraphQLList(TrackType),
+            args: {
+                trackIDs: { type: new GraphQLNonNull(new GraphQLList(GraphQLID)) }
+            },
+            resolve(parentValue, { trackIDs }, req){
+                return SpotifyService.getTracks(trackIDs, req);
             }
         },
         search: {
