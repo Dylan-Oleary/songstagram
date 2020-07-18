@@ -7,14 +7,11 @@ const LikeSchema = new Schema({
         ref: "User",
         required: true
     },
-    context: {
-        type: String,
-        enum: [
-            "post",
-            "comment"
-        ],
+    post: {
+        type: Schema.Types.ObjectId,
+        ref: "Post",
         required: true
     }
 }, { timestamps: true });
 
-mongoose.model("Like", LikeSchema);
+module.exports = mongoose.model("Like", LikeSchema);

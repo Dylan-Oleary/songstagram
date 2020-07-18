@@ -6,11 +6,13 @@ const {
     GraphQLString
 } = graphql;
 const { GraphQLDateTime } = require("graphql-iso-date");
+const LikesService = require("../../services/likes");
 const PostService = require("../../services/post");
 
 module.exports = new GraphQLObjectType({
     name: "UserType",
     fields: () => {
+        const LikeType = require("./likeType");
         const PostType = require("./postType");
 
         return {
@@ -25,6 +27,12 @@ module.exports = new GraphQLObjectType({
                 type: new GraphQLList(PostType),
                 resolve({ id, cursorIndex = 0 }){
                     return PostService.getPostsByUser(id, cursorIndex);
+                }
+            },
+            likes: {
+                type: new GraphQLList(LikeType),
+                resolve({ id }){
+                    return LikesService.getLikesByUserID(id);
                 }
             },
             createdAt: { type: GraphQLDateTime },
