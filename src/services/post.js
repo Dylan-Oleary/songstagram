@@ -84,6 +84,51 @@ const PostService = {
         } else {
             throw new Error("You cannot create a post if you are not logged in");
         }
+    },
+    addLikeToPost: (postID, userID, req) => {
+        if(req.session.user && req.session.user.id == userID){
+            return Post.findById(postID).then(foundPost => {
+                if(foundPost){
+                    const currentUserLike = foundPost.likes.find(id => id == userID);
+
+                    if(!currentUserLike){
+                        return Post.findByIdAndUpdate(postID, { $push: { likes: userID } }, { new: true });
+                    } else {
+                        throw new Error("You cannot like a post that you've already liked");
+                    }
+                } else {
+                    throw new Error("You cannot like a post that does not exist");
+                }
+            });
+        } else {
+            throw new Error("You cannot like a post if you are not logged in");
+        }
+    },
+    removeLikeFromPost: (postID, userID, req) => {
+        if(req.session.user && req.session.user.id == userID){
+            return Post.findById(postID).then(foundPost => {
+                if(foundPost){
+                    const currentUserLike = foundPost.likes.find(id => id == userID);
+
+                    if(currentUserLike){
+                        return Post.findByIdAndUpdate(postID, { $pull: { likes: userID } }, { new: true });
+                    } else {
+                        throw new Error("You cannot remove a like from a post that you haven't liked");
+                    }
+                } else {
+                    throw new Error("You cannot remove a like from a post that does not exist");
+                }
+            });
+        } else {
+            throw new Error("You cannot remove a like from a post if you are not logged in");
+        }
+    },
+    getPostsLikedByUser: (userID, req) => {
+        if(req.session.user && req.session.user.id == userID){
+            return Post.find({ likes: { $in: [ userID ] } });
+        } else {
+            throw new Error("You cannot get liked by posts from another user");
+        }
     }
 };
 

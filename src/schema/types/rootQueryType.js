@@ -41,8 +41,11 @@ module.exports = new GraphQLObjectType({
         },
         users: {
             type: new GraphQLList(UserType),
-            resolve(){
-                return UserService.getUsers();
+            args: {
+                userIDs: { type: new GraphQLNonNull(new GraphQLList(GraphQLID)) }
+            },
+            resolve(parentValue, { userIDs }){
+                return UserService.getUsers(userIDs);
             }
         },
         // Posts

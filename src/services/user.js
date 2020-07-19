@@ -36,8 +36,14 @@ const UserService = {
             throw new Error("Invalid credentials");
         }
     },
-    getUsers: () => {
-        return User.find();
+    getUsers: (userIDs = []) => {
+        if(userIDs.length > 0){
+            return User.find({
+                _id: { $in: userIDs }
+            });
+        } else {
+            throw new Error("You must pass in at least one user ID");
+        }
     },
     getUserByID: id => {
         return User.findById(id);

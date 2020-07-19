@@ -30,14 +30,6 @@ const UserSchema = new Schema({
     profilePicture: {
         type: String
     },
-    posts: [{
-        type: Schema.Types.ObjectId,
-        ref: "Post"
-    }],
-    likedPosts: [{
-        type: Schema.Types.ObjectId,
-        ref: "Like"
-    }],
     followers: [{
         type: Schema.Types.ObjectId,
         ref: "User"
@@ -45,10 +37,6 @@ const UserSchema = new Schema({
     following: [{
         type: Schema.Types.ObjectId,
         ref: "User"
-    }],
-    comments: [{
-        type: Schema.Types.ObjectId,
-        ref: "Comment"
     }]
 }, { timestamps: true });
 

@@ -47,6 +47,26 @@ const PostMutations = {
         resolve(parentValue, { id, userID }, req){
             return PostService.deletePost(id, userID, req);
         }
+    },
+    addLikeToPost: {
+        type: PostType,
+        args: {
+            postID: { type: new GraphQLNonNull(GraphQLID) },
+            userID: { type: new GraphQLNonNull(GraphQLID) }
+        },
+        resolve(parentValue, { postID, userID }, req){
+            return PostService.addLikeToPost(postID, userID, req);
+        }
+    },
+    removeLikeFromPost: {
+        type: PostType,
+        args: {
+            postID: { type: new GraphQLNonNull(GraphQLID) },
+            userID: { type: new GraphQLNonNull(GraphQLID) }
+        },
+        resolve(parentValue, { postID, userID }, req){
+            return PostService.removeLikeFromPost(postID, userID, req);
+        }
     }
 };
 

@@ -8,14 +8,12 @@ const {
     GraphQLString
 } = graphql;
 const { GraphQLDateTime } = require("graphql-iso-date");
-const LikesService = require("../../services/likes");
 const SpotifyService = require("../../services/spotify");
 const UserService = require("../../services/user");
 
 module.exports = new GraphQLObjectType({
     name: "PostType",
     fields: () => {
-        const LikeType = require("./likeType");
         const TrackType = require("./trackType");
         const UserType = require("./userType");
 
@@ -30,14 +28,14 @@ module.exports = new GraphQLObjectType({
             },
             user: {
                 type: UserType,
-                resolve({ user }){
-                    return UserService.getUserByID(user);
+                resolve({ user: userID }){
+                    return UserService.getUserByID(userID);
                 }
             },
             likes: {
-                type: new GraphQLList(LikeType),
-                resolve({ id }){
-                    return LikesService.getLikesByPostID(id);
+                type: new GraphQLList(UserType),
+                resolve({ likes: userIDs }){
+                    return UserService.getUsers(userIDs);
                 }
             },
             isEdited: { type: GraphQLBoolean },
