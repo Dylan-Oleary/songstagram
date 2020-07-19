@@ -8,6 +8,7 @@ const {
 } = graphql;
 const { GraphQLDateTime } = require("graphql-iso-date");
 const PostService = require("../../services/post");
+const withAuthentication = require("../../lib/withAuthentication");
 
 module.exports = new GraphQLObjectType({
     name: "UserType",
@@ -31,7 +32,7 @@ module.exports = new GraphQLObjectType({
             likes: {
                 type: new GraphQLList(PostType),
                 resolve({ id }, {}, req){
-                    return PostService.getPostsLikedByUser(id, req);
+                    return withAuthentication(req, id, () => PostService.getPostsLikedByUser(id));
                 }
             },
             createdAt: { type: GraphQLDateTime },

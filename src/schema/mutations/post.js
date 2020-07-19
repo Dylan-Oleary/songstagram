@@ -4,6 +4,7 @@ const {
     GraphQLNonNull,
     GraphQLString
 } = graphql;
+const withAuthentication = require("../../lib/withAuthentication");
 
 // Types
 const PostType = require("../types/postType");
@@ -22,7 +23,7 @@ const PostMutations = {
         resolve(parentValue, { body, spotifyTrackID, userID }, req){
             const post = { body, spotifyTrackID };
 
-            return PostService.createPost(post, userID, req);
+            return withAuthentication(req, userID, () => PostService.createPost(post, userID));
         }
     },
     editPost: {
@@ -35,7 +36,7 @@ const PostMutations = {
         resolve(parentValue, { id, body, userID }, req){
             const post = { id, body };
 
-            return PostService.editPost(post, userID, req);
+            return withAuthentication(req, userID, () => PostService.editPost(post, userID));
         }
     },
     deletePost: {
@@ -45,7 +46,7 @@ const PostMutations = {
             userID: { type: new GraphQLNonNull(GraphQLID) }
         },
         resolve(parentValue, { id, userID }, req){
-            return PostService.deletePost(id, userID, req);
+            return withAuthentication(req, userID, () => PostService.deletePost(id, userID));
         }
     },
     addLikeToPost: {
@@ -55,7 +56,7 @@ const PostMutations = {
             userID: { type: new GraphQLNonNull(GraphQLID) }
         },
         resolve(parentValue, { postID, userID }, req){
-            return PostService.addLikeToPost(postID, userID, req);
+            return withAuthentication(req, userID, () => PostService.addLikeToPost(postID, userID));
         }
     },
     removeLikeFromPost: {
@@ -65,7 +66,7 @@ const PostMutations = {
             userID: { type: new GraphQLNonNull(GraphQLID) }
         },
         resolve(parentValue, { postID, userID }, req){
-            return PostService.removeLikeFromPost(postID, userID, req);
+            return withAuthentication(req, userID, () => PostService.removeLikeFromPost(postID, userID));
         }
     }
 };

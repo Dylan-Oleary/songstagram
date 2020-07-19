@@ -5,6 +5,7 @@ const {
     GraphQLNonNull,
     GraphQLString
 } = graphql;
+const withAuthentication = require("../../lib/withAuthentication");
 
 // Types
 const UserType = require("../types/userType");
@@ -28,7 +29,7 @@ const UserMutations = {
             const { id } = args;
             delete args.id;
 
-            return UserService.editUser(id, args, req);
+            return withAuthentication(req, id, () => UserService.editUser(id, args));
         }
     },
     deleteUser: {
@@ -37,7 +38,7 @@ const UserMutations = {
             id: { type: new GraphQLNonNull(GraphQLID) }
         },
         resolve(parentValue, { id }, req){
-            return UserService.deleteUser(id, req);
+            return withAuthentication(req, id, () => UserService.deleteUser(id));
         }
     },
     loginUser: {
