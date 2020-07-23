@@ -8,38 +8,29 @@ const {
     GraphQLString
 } = graphql;
 const { GraphQLDateTime } = require("graphql-iso-date");
-
-// Services
-const PostService = require("../../services/post");
-const SpotifyService = require("../../services/spotify");
+const CommentService = require("../../services/comment");
 const UserService = require("../../services/user");
 
-module.exports = new GraphQLObjectType({
-    name: "PostType",
+const CommentType = new GraphQLObjectType({
+    name: "CommentType",
     fields: () => {
-        const CommentType = require("./commentType");
-        const TrackType = require("./trackType");
         const UserType = require("./userType");
 
         return {
             id: { type: GraphQLID },
             body: { type: GraphQLString },
-            track: {
-                type: TrackType,
-                resolve({ spotifyTrackID }, {}, req){
-                    return SpotifyService.getTrack(spotifyTrackID, req);
-                }
-            },
+            parentComment: { type: GraphQLID },
             user: {
                 type: UserType,
                 resolve({ user: userID }){
                     return UserService.getUserByID(userID);
                 }
             },
-            comments: {
+            isEdited: { type: GraphQLBoolean },
+            replies: {
                 type: new GraphQLList(CommentType),
-                resolve({ id: postID }){
-                    return PostService.getPostParentComments(postID);
+                resolve({ id: commentID, post: postID }){
+                    return CommentService.getCommentReplies(commentID, postID);
                 }
             },
             likes: {
@@ -48,9 +39,10 @@ module.exports = new GraphQLObjectType({
                     return UserService.getUsers(userIDs);
                 }
             },
-            isEdited: { type: GraphQLBoolean },
             createdAt: { type: GraphQLDateTime },
             updatedAt: { type: GraphQLDateTime }
         };
     }
 });
+
+module.exports = CommentType;

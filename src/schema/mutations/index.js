@@ -12,6 +12,7 @@ module.exports = new GraphQLObjectType({
         createPost: PostMutations.createPost,
         editPost: PostMutations.editPost,
         deletePost: PostMutations.deletePost,
+        addCommentToPost: PostMutations.addCommentToPost,
         addLikeToPost: PostMutations.addLikeToPost,
         removeLikeFromPost: PostMutations.removeLikeFromPost,
         // User Mutations

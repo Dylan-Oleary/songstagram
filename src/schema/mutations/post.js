@@ -68,6 +68,18 @@ const PostMutations = {
         resolve(parentValue, { postID, userID }, req){
             return withAuthentication(req, userID, () => PostService.removeLikeFromPost(postID, userID));
         }
+    },
+    addCommentToPost: {
+        type: PostType,
+        args: {
+            comment: { type: new GraphQLNonNull(GraphQLString) },
+            parentComment: { type: GraphQLID },
+            postID: { type: new GraphQLNonNull(GraphQLID) },
+            userID: { type: new GraphQLNonNull(GraphQLID) }
+        },
+        resolve(parentValue, { postID, userID, comment, parentComment }, req){
+            return withAuthentication(req, userID, () => PostService.addCommentToPost(postID, userID, comment, parentComment));
+        }
     }
 };
 

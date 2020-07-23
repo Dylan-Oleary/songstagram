@@ -11,12 +11,14 @@ const {
 // Types
 const ArtistType = require("./artistType");
 const AlbumType = require("./albumType");
+const CommentType = require("./commentType");
 const PostType = require("./postType");
 const SearchType = require("./searchType");
 const TrackType = require("./trackType");
 const UserType = require("./userType");
 
 // Services
+const CommentService = require("../../services/comment");
 const PostService = require("../../services/post");
 const SpotifyService = require("../../services/spotify");
 const UserService = require("../../services/user");
@@ -56,6 +58,26 @@ module.exports = new GraphQLObjectType({
             },
             resolve(parentValue, { id }){
                 return PostService.getPostByID(id);
+            }
+        },
+        postComments: {
+            type: new GraphQLList(CommentType),
+            args: {
+                postID: { type: new GraphQLNonNull(GraphQLID) }
+            },
+            resolve(parentValue, { postID }){
+                return PostService.getPostParentComments(postID);
+            }
+        },
+        // Comments
+        comment: {
+            type: CommentType,
+            args: {
+                commentID: { type: new GraphQLNonNull(GraphQLID) },
+                postID: { type: new GraphQLNonNull(GraphQLID) }
+            },
+            resolve(parentValue, { commentID }){
+                return CommentService.getCommentByID(commentID);
             }
         },
         // Artists

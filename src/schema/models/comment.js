@@ -11,10 +11,27 @@ const CommentSchema = new Schema({
         ref: "User",
         required: true
     },
+    post: {
+        type: Schema.Types.ObjectId,
+        ref: "Post",
+        required: true
+    },
+    isEdited: {
+        type: Boolean,
+        default: false
+    },
+    parentComment: {
+        type: Schema.Types.ObjectId,
+        ref: "Comment"
+    },
+    replies: [{
+        type: Schema.Types.ObjectId,
+        ref: "Comment"
+    }],
     likes: [{
         type: Schema.Types.ObjectId,
-        ref: "Like"
+        ref: "User"
     }]
 }, { timestamps: true });
 
-mongoose.model("Comment", CommentSchema);
+module.exports = mongoose.model("Comment", CommentSchema);
