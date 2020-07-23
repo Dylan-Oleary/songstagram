@@ -14,9 +14,9 @@ const CommentService = {
 
         try {
             if(parentCommentID) await Comment.findById(parentCommentID).then(parentComment => {
-                if(parentComment) return;
+                if(parentComment.post == postID) return;
 
-                throw new Error("You cannot add a parent comment that doesn't exist");
+                throw new Error("You cannot reply to a comment that doesn't belong to the current post");
             });
 
             return newComment.save();

@@ -1,6 +1,5 @@
 /* eslint-disable no-empty-pattern */
 const graphql = require("graphql");
-const SpotifyService = require("../../services/spotify");
 const {
     GraphQLID,
     GraphQLInt,
@@ -9,7 +8,10 @@ const {
     GraphQLString
 } = graphql;
 
-module.exports = new GraphQLObjectType({
+// Services
+const SpotifyService = require("../../services/spotify");
+
+const ArtistType = new GraphQLObjectType({
     name: "ArtistType",
     fields: () => {
         const AlbumType = require("./albumType");
@@ -29,3 +31,5 @@ module.exports = new GraphQLObjectType({
         };
     }
 });
+
+module.exports = ArtistType;

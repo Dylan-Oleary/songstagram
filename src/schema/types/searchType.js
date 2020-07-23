@@ -6,7 +6,7 @@ const {
     GraphQLString
 } = graphql;
 
-module.exports = new GraphQLObjectType({
+const SearchType = new GraphQLObjectType({
     name: "SearchType",
     fields: () => {
         const TrackType = require("./trackType");
@@ -18,3 +18,5 @@ module.exports = new GraphQLObjectType({
         };
     }
 });
+
+module.exports = SearchType;

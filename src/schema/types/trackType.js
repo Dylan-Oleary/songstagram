@@ -7,9 +7,11 @@ const {
     GraphQLObjectType,
     GraphQLString
 } = graphql;
+
+// Services
 const SpotifyService = require("../../services/spotify");
 
-module.exports = new GraphQLObjectType({
+const TrackType = new GraphQLObjectType({
     name: "TrackType",
     fields: () => {
         const ArtistType = require("./artistType");
@@ -39,3 +41,5 @@ module.exports = new GraphQLObjectType({
         };
     }
 });
+
+module.exports = TrackType;

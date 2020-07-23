@@ -8,9 +8,11 @@ const {
     GraphQLString
 } = graphql;
 const { GraphQLDateTime } = require("graphql-iso-date");
+
+// Services
 const SpotifyService = require("../../services/spotify");
 
-module.exports = new GraphQLObjectType({
+const AlbumType = new GraphQLObjectType({
     name: "AlbumType",
     fields: () => {
         const ArtistType = require("./artistType");
@@ -43,3 +45,5 @@ module.exports = new GraphQLObjectType({
         };
     }
 });
+
+module.exports = AlbumType;

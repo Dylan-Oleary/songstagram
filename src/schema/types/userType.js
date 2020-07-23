@@ -7,10 +7,12 @@ const {
     GraphQLString
 } = graphql;
 const { GraphQLDateTime } = require("graphql-iso-date");
-const PostService = require("../../services/post");
 const withAuthentication = require("../../lib/withAuthentication");
 
-module.exports = new GraphQLObjectType({
+// Services
+const PostService = require("../../services/post");
+
+const UserType = new GraphQLObjectType({
     name: "UserType",
     fields: () => {
         const PostType = require("./postType");
@@ -40,3 +42,5 @@ module.exports = new GraphQLObjectType({
         };
     }
 });
+
+module.exports = UserType;

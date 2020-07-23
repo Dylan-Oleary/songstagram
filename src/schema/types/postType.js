@@ -14,7 +14,7 @@ const PostService = require("../../services/post");
 const SpotifyService = require("../../services/spotify");
 const UserService = require("../../services/user");
 
-module.exports = new GraphQLObjectType({
+const PostType = new GraphQLObjectType({
     name: "PostType",
     fields: () => {
         const CommentType = require("./commentType");
@@ -54,3 +54,5 @@ module.exports = new GraphQLObjectType({
         };
     }
 });
+
+module.exports = PostType;
