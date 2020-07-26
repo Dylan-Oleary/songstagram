@@ -34,7 +34,7 @@ module.exports = new GraphQLObjectType({
                 cursorIndex: { type: GraphQLInt }
             },
             resolve(parentValue, { id, cursorIndex }){
-                return UserService.getUserByID(id, cursorIndex).then(user => {
+                return UserService.getUserByID(id).then(user => {
                     user.cursorIndex = cursorIndex;
 
                     return user;

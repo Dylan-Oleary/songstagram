@@ -20,6 +20,8 @@ module.exports = new GraphQLObjectType({
         deleteUser: UserMutations.deleteUser,
         loginUser: UserMutations.loginUser,
         logoutUser: UserMutations.logoutUser,
-        registerUser: UserMutations.registerUser
+        registerUser: UserMutations.registerUser,
+        followUser: UserMutations.followUser,
+        unfollowUser: UserMutations.unfollowUser
     }
 });

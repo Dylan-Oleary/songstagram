@@ -82,6 +82,26 @@ const UserMutations = {
 
             return AuthenticationService.registerUser(newUser, req);
         }
+    },
+    followUser: {
+        type: UserType,
+        args: {
+            userID: { type: new GraphQLNonNull(GraphQLID) },
+            userToFollowID: { type: new GraphQLNonNull(GraphQLID) }
+        },
+        resolve(parentValue, { userID, userToFollowID }, req){
+            return withAuthentication(req, userID, () => UserService.followUser(userID, userToFollowID));
+        }
+    },
+    unfollowUser: {
+        type: UserType,
+        args: {
+            userID: { type: new GraphQLNonNull(GraphQLID) },
+            userToUnfollowID: { type: new GraphQLNonNull(GraphQLID) }
+        },
+        resolve(parentValue, { userID, userToUnfollowID }, req){
+            return withAuthentication(req, userID, () => UserService.unfollowUser(userID, userToUnfollowID));
+        }
     }
 };
 
