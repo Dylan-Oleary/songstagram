@@ -1,4 +1,5 @@
 const { User } = require("../schema/models");
+const { errorNames } = require("../config/errors");
 
 const AuthenticationService = {
     loginUser: (user, req) => {
@@ -6,7 +7,7 @@ const AuthenticationService = {
 
         if(!req.session.user){
             return User.findOne({ email }).then(foundUser => {
-                if(!foundUser) throw new Error("Email is invalid");
+                if(!foundUser) throw new Error(errorNames.USER_DOES_NOT_EXIST);
 
                 return new Promise((resolve, reject) => {
                     foundUser.authenticate(password, (error, isMatch) => {
@@ -17,12 +18,9 @@ const AuthenticationService = {
                                 username: foundUser.username
                             });
                         } else {
-                            if (error) reject(error);
+                            if (error) reject(new Error(errorNames.SERVER_ERROR));
 
-                            reject(new Error({
-                                status: 401,
-                                message: "Invalid credentials"
-                            }));
+                            reject(new Error(errorNames.INVALID_CREDENTIALS));
                         }
                     });
                 }).then(authenticatedUser => {
@@ -34,7 +32,7 @@ const AuthenticationService = {
                 });
             });
         } else {
-            throw new Error("User is already logged in");
+            throw new Error(errorNames.USER_ALREADY_LOGGED_IN);
         }
     },
     logoutUser: (user, req) => {
@@ -42,7 +40,7 @@ const AuthenticationService = {
 
         if(req.session.user){
             return User.findOne({ email }).then(foundUser => {
-                if(!foundUser) throw new Error("Email is invalid");
+                if(!foundUser) throw new Error(errorNames.USER_DOES_NOT_EXIST);
 
                 if(
                     req.session.user.id == foundUser._id &&
@@ -50,16 +48,16 @@ const AuthenticationService = {
                     req.session.user.username === foundUser.username
                 ) {
                     req.session.destroy(error => {
-                        if(error) throw error;
+                        if(error) throw new Error(errorNames.SERVER_ERROR);
                     });
 
                     return true;
                 } else {
-                    throw new Error("Session details do not match found user");
+                    throw new Error(errorNames.INVALID_CREDENTIALS);
                 }
             });
         } else {
-            throw new Error("User is not logged in");
+            throw new Error(errorNames.INVALID_CREDENTIALS);
         }
     },
     registerUser: (user, req) => {
@@ -73,6 +71,8 @@ const AuthenticationService = {
                 confirmPassword: user.confirmPassword
             });
 
+            if(newUser.password !== newUser.confirmPassword) throw new Error(errorNames.PASSWORDS_DO_NOT_MATCH);
+
             [
                 "firstName",
                 "lastName",
@@ -80,7 +80,7 @@ const AuthenticationService = {
                 "email",
                 "password"
             ].forEach(key => {
-                if(!newUser[key]) throw new Error("You are missing some required fields");
+                if(!newUser[key]) throw new Error(errorNames.MISSING_REQUIRED_FIELDS);
             });
 
             return User.findOne({
@@ -96,9 +96,15 @@ const AuthenticationService = {
                         if(existingUser[key] === newUser[key]) errors.push(key);
                     });
 
-                    throw {
-                        errors
-                    };
+                    if(errors.length > 1){
+                        throw new Error(errorNames.USERNAME_AND_EMAIL_TAKEN);
+                    } else if(errors.indexOf("email") != -1){
+                        throw new Error(errorNames.EMAIL_ALREADY_TAKEN);
+                    } else if(errors.indexOf("username") != -1){
+                        throw new Error(errorNames.USERNAME_ALREADY_TAKEN);
+                    } else {
+                        throw new Error(errorNames.BAD_REQUEST);
+                    }
                 } else {
                     return newUser.save().then(registeredUser => {
                         req.session.user = {
@@ -108,11 +114,15 @@ const AuthenticationService = {
                         };
 
                         return registeredUser;
+                    }).catch(error => {
+                        console.error(error);
+
+                        throw new Error(errorNames.SERVER_ERROR);
                     });
                 }
             });
         } else {
-            throw new Error("You are already logged in");
+            throw new Error(errorNames.USER_ALREADY_LOGGED_IN);
         }
     }
 };

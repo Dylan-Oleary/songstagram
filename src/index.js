@@ -7,6 +7,7 @@ const redis = require("redis");
 const RedisStore = require("connect-redis")(session);
 const redisClient = redis.createClient();
 const { connectToMongo, connectToSpotify } = require("./config");
+const errorHandler = require("./lib/errorHandler");
 
 const initializeApp = () => {
     const app = express();
@@ -25,7 +26,8 @@ const initializeApp = () => {
 
         app.use("/graphql", expressGraphQL({
             schema: graphQlSchema,
-            graphiql: true
+            graphiql: process.NODE_ENV === "production" ? false : true,
+            customFormatErrorFn: errorHandler
         }));
 
         app.emit("ready");
