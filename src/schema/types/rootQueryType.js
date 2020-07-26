@@ -31,11 +31,15 @@ module.exports = new GraphQLObjectType({
             type: UserType,
             args: {
                 id: { type: new GraphQLNonNull(GraphQLID) },
-                cursorIndex: { type: GraphQLInt }
+                postCursorIndex: { type: GraphQLInt },
+                followerCursorIndex: { type: GraphQLInt },
+                followingCursorIndex: {type: GraphQLInt }
             },
-            resolve(parentValue, { id, cursorIndex }){
+            resolve(parentValue, { id, postCursorIndex, followerCursorIndex, followingCursorIndex }){
                 return UserService.getUserByID(id).then(user => {
-                    user.cursorIndex = cursorIndex;
+                    user.cursorIndex = postCursorIndex;
+                    user.followerCursorIndex = followerCursorIndex;
+                    user.followingCursorIndex = followingCursorIndex;
 
                     return user;
                 });

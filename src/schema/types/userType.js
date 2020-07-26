@@ -28,20 +28,38 @@ const UserType = new GraphQLObjectType({
             profilePicture: { type: GraphQLString },
             followers: {
                 type: new GraphQLList(UserType),
-                resolve({ followers }){
-                    return UserService.getUsers(followers);
+                resolve({ followers, followerCursorIndex = 0 }){
+                    const options = {
+                        cursorIndex: followerCursorIndex,
+                        sort: { createdAt: "desc" },
+                        limit: 20
+                    };
+
+                    return UserService.getUsers(followers, options);
                 }
             },
             following: {
                 type: new GraphQLList(UserType),
-                resolve({ following }){
-                    return UserService.getUsers(following);
+                resolve({ following, followingCursorIndex = 0 }){
+                    const options = {
+                        cursorIndex: followingCursorIndex,
+                        sort: { createdAt: "desc" },
+                        limit: 20
+                    };
+
+                    return UserService.getUsers(following, options);
                 }
             },
             posts: {
                 type: new GraphQLList(PostType),
-                resolve({ id, cursorIndex = 0 }){
-                    return PostService.getPostsByUser(id, cursorIndex);
+                resolve({ id, postCursorIndex = 0 }){
+                    const options = {
+                        cursorIndex: postCursorIndex,
+                        sort: { createdAt: "desc" },
+                        limit: 12
+                    };
+
+                    return PostService.getPostsByUser(id, options);
                 }
             },
             likes: {

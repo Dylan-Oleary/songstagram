@@ -5,13 +5,17 @@ const PostService = {
     getPostByID: postID => {
         return Post.findById(postID);
     },
-    getPostsByUser: (userID, cursorIndex) => {
-        const postLimit = 9;
+    getPostsByUser: (userID, options) => {
+        const queryOptions = {
+            cursorIndex: options.cursorIndex || 0,
+            sort: options.sort || { createdAt: "desc" },
+            limit: options.limit || 12
+        };
 
         return Post.find({ user: userID })
-            .sort({ createdAt: "desc" })
-            .skip(cursorIndex * postLimit)
-            .limit(postLimit)
+            .sort(queryOptions.sort)
+            .skip(queryOptions.cursorIndex * queryOptions.limit)
+            .limit(queryOptions.limit)
             .then(posts => {
                 return posts;
             })

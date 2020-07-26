@@ -28,11 +28,21 @@ const UserService = {
             }
         });
     },
-    getUsers: (userIDs = []) => {
+    getUsers: (userIDs = [], options) => {
         if(userIDs.length > 0){
-            return User.find({
-                _id: { $in: userIDs }
-            });
+            const queryOptions = {
+                cursorIndex: options.cursorIndex || 0,
+                sort: options.sort || { createdAt: "desc" },
+                limit: options.limit || 20
+            };
+
+            return User.find({ _id: { $in: userIDs } })
+                .sort(queryOptions.sort)
+                .skip(queryOptions.cursorIndex * queryOptions.limit)
+                .limit(queryOptions.limit)
+                .then(users => {
+                    return users;
+                });
         } else {
             return [];
         }
