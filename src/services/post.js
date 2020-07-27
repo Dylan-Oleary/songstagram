@@ -1,9 +1,13 @@
 const { Post } = require("../schema/models");
 const CommentService = require("./comment");
+const { errorNames } = require("../config/errors");
 
 const PostService = {
     getPostByID: postID => {
-        return Post.findById(postID);
+        return Post.findById(postID).catch(error => {
+            console.error(error);
+            throw new Error(errorNames.SERVER_ERROR);
+        });
     },
     getPostsByUser: (userID, options) => {
         const queryOptions = {
@@ -19,6 +23,10 @@ const PostService = {
             .then(posts => {
                 return posts;
             })
+            .catch(error => {
+                console.error(error);
+                throw new Error(errorNames.SERVER_ERROR);
+            })
         ;
     },
     createPost: (post, userID) => {
@@ -31,9 +39,12 @@ const PostService = {
 
             return newPost.save().then(newPost => {
                 return newPost;
+            }).catch(error => {
+                console.error(error);
+                throw new Error(errorNames.SERVER_ERROR);
             });
         } else {
-            throw new Error("You must pass a Spotify Track ID to create a post");
+            throw new Error(errorNames.EMPTY_SPOTIFY_ID);
         }
     },
     editPost: (post, userID) => {
@@ -49,19 +60,31 @@ const PostService = {
                 return Post.findByIdAndUpdate(id, updatedPost, {
                     new: true,
                     runValidators: true
+                }).catch(error => {
+                    console.error(error);
+                    throw new Error(errorNames.SERVER_ERROR);
                 });
             } else {
-                throw new Error("You cannot edit another user's post");
+                throw new Error(errorNames.INVALID_CREDENTIALS);
             }
+        }).catch(error => {
+            console.error(error);
+            throw new Error(errorNames.SERVER_ERROR);
         });
     },
     deletePost: (postID, userID) => {
         return Post.findById(postID).then(foundPost => {
             if(foundPost.user == userID){
-                return Post.findByIdAndDelete(postID);
+                return Post.findByIdAndDelete(postID).catch(error => {
+                    console.error(error);
+                    throw new Error(errorNames.SERVER_ERROR);
+                });
             } else {
-                throw new Error("You cannot delete another user's post");
+                throw new Error(errorNames.INVALID_CREDENTIALS);
             }
+        }).catch(error => {
+            console.error(error);
+            throw new Error(errorNames.SERVER_ERROR);
         });
     },
     addLikeToPost: (postID, userID) => {
@@ -70,13 +93,19 @@ const PostService = {
                 const currentUserLike = foundPost.likes.find(id => id == userID);
 
                 if(!currentUserLike){
-                    return Post.findByIdAndUpdate(postID, { $push: { likes: userID } }, { new: true });
+                    return Post.findByIdAndUpdate(postID, { $push: { likes: userID } }, { new: true }).catch(error => {
+                        console.error(error);
+                        throw new Error(errorNames.SERVER_ERROR);
+                    });
                 } else {
-                    throw new Error("You cannot like a post that you've already liked");
+                    throw new Error(errorNames.INVALID_LIKE);
                 }
             } else {
-                throw new Error("You cannot like a post that does not exist");
+                throw new Error(errorNames.POST_DOES_NOT_EXIST);
             }
+        }).catch(error => {
+            console.error(error);
+            throw new Error(errorNames.SERVER_ERROR);
         });
     },
     removeLikeFromPost: (postID, userID) => {
@@ -85,17 +114,26 @@ const PostService = {
                 const currentUserLike = foundPost.likes.find(id => id == userID);
 
                 if(currentUserLike){
-                    return Post.findByIdAndUpdate(postID, { $pull: { likes: userID } }, { new: true });
+                    return Post.findByIdAndUpdate(postID, { $pull: { likes: userID } }, { new: true }).catch(error => {
+                        console.error(error);
+                        throw new Error(errorNames.SERVER_ERROR);
+                    });
                 } else {
-                    throw new Error("You cannot remove a like from a post that you haven't liked");
+                    throw new Error(errorNames.INVALID_UNLIKE);
                 }
             } else {
-                throw new Error("You cannot remove a like from a post that does not exist");
+                throw new Error(errorNames.POST_DOES_NOT_EXIST);
             }
+        }).catch(error => {
+            console.error(error);
+            throw new Error(errorNames.SERVER_ERROR);
         });
     },
     getPostsLikedByUser: userID => {
-        return Post.find({ likes: { $in: [ userID ] } });
+        return Post.find({ likes: { $in: [ userID ] } }).catch(error => {
+            console.error(error);
+            throw new Error(errorNames.SERVER_ERROR);
+        });
     },
     addCommentToPost: (postID, userID, comment, parentComment = undefined) => {
         return Post.findById(postID).then(foundPost => {
@@ -104,14 +142,20 @@ const PostService = {
                     try {
                         if(parentComment) await CommentService.addReplyToComment(newComment._id, parentComment);
 
-                        return Post.findByIdAndUpdate(postID, { $push: { comments: newComment._id } }, { new: true });
+                        return Post.findByIdAndUpdate(postID, { $push: { comments: newComment._id } }, { new: true }).catch(error => {
+                            console.error(error);
+                            throw new Error(errorNames.SERVER_ERROR);
+                        });
                     } catch(error){
                         throw new Error(error);
                     }
                 });
             } else {
-                throw new Error("You cannot add a comment to a post that doesn't exist");
+                throw new Error(errorNames.POST_DOES_NOT_EXIST);
             }
+        }).catch(error => {
+            console.error(error);
+            throw new Error(errorNames.SERVER_ERROR);
         });
     },
     getPostParentComments: postID => {
@@ -131,8 +175,11 @@ const PostService = {
 
                 return CommentService.getComments(options, sort);
             } else {
-                throw new Error("You cannot get comments for a post that does not exist");
+                throw new Error(errorNames.POST_DOES_NOT_EXIST);
             }
+        }).catch(error => {
+            console.error(error);
+            throw new Error(errorNames.SERVER_ERROR);
         });
     }
 };

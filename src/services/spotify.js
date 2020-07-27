@@ -3,6 +3,7 @@ const qs = require("qs");
 const ms = require("ms");
 const authorization = `${process.env.SPOTIFY_CLIENT_ID}:${process.env.SPOTIFY_CLIENT_SECRET}`;
 const spotifyWebHeaders = "spotifyWebHeaders";
+const { errorNames } = require("../config/errors");
 
 const SpotifyService = {
     getWebToken(app){
@@ -21,11 +22,14 @@ const SpotifyService = {
                     console.info("Refreshing Spotify Web Token");
                     this.getWebToken(app).catch(error => {
                         console.error(error);
-                        //Send to Error reporting
+                        throw new Error(errorNames.SPOTIFY_FAILED_CONNECTION);
                     });
                 }, ms(process.env.SPOTIFY_TOKEN_REFRESH));
 
                 return;
+            }).catch(error => {
+                console.error(error);
+                throw new Error(errorNames.SPOTIFY_FAILED_CONNECTION);
             });
         } else {
             app.set("spotifyWebToken", process.env.SPOTIFY_DEV_TOKEN);
@@ -36,7 +40,10 @@ const SpotifyService = {
     getArtist(artistID, req){
         return axios.get(`https://api.spotify.com/v1/artists/${artistID}`, {
             headers: req.app.get(spotifyWebHeaders)
-        }).then(({ data }) => data);
+        }).then(({ data }) => data).catch(error => {
+            console.error(error);
+            throw new Error(errorNames.SPOTIFY_API_ERROR);
+        });
     },
     getArtists(artistIDs, req){
         return axios.get("https://api.spotify.com/v1/artists", {
@@ -44,12 +51,18 @@ const SpotifyService = {
                 ids: artistIDs.join(",")
             },
             headers: req.app.get(spotifyWebHeaders)
-        }).then(({ data }) => data.artists);
+        }).then(({ data }) => data.artists).catch(error => {
+            console.error(error);
+            throw new Error(errorNames.SPOTIFY_API_ERROR);
+        });
     },
     getAlbum(albumID, req){
         return axios.get(`https://api.spotify.com/v1/albums/${albumID}`, {
             headers: req.app.get(spotifyWebHeaders)
-        }).then(({ data }) => data);
+        }).then(({ data }) => data).catch(error => {
+            console.error(error);
+            throw new Error(errorNames.SPOTIFY_API_ERROR);
+        });
     },
     getAlbums(albumIDs, req){
         return axios.get("https://api.spotify.com/v1/albums", {
@@ -57,22 +70,34 @@ const SpotifyService = {
                 ids: albumIDs.join(",")
             },
             headers: req.app.get(spotifyWebHeaders)
-        }).then(({ data }) => data.albums);
+        }).then(({ data }) => data.albums).catch(error => {
+            console.error(error);
+            throw new Error(errorNames.SPOTIFY_API_ERROR);
+        });
     },
     getAlbumsByArtist(artistID, req){
         return axios.get(`https://api.spotify.com/v1/artists/${artistID}/albums`, {
             headers: req.app.get(spotifyWebHeaders)
-        }).then(({ data }) => data.items);
+        }).then(({ data }) => data.items).catch(error => {
+            console.error(error);
+            throw new Error(errorNames.SPOTIFY_API_ERROR);
+        });
     },
     getAlbumTracks(albumID, req){
         return axios.get(`https://api.spotify.com/v1/albums/${albumID}/tracks`, {
             headers: req.app.get(spotifyWebHeaders)
-        }).then(({ data }) => data);
+        }).then(({ data }) => data).catch(error => {
+            console.error(error);
+            throw new Error(errorNames.SPOTIFY_API_ERROR);
+        });
     },
     getTrack(trackID, req){
         return axios.get(`https://api.spotify.com/v1/tracks/${trackID}`, {
             headers: req.app.get(spotifyWebHeaders)
-        }).then(({ data }) => data);
+        }).then(({ data }) => data).catch(error => {
+            console.error(error);
+            throw new Error(errorNames.SPOTIFY_API_ERROR);
+        });
     },
     getTracks(trackIds, req){
         return axios.get("https://api.spotify.com/v1/tracks", {
@@ -80,7 +105,10 @@ const SpotifyService = {
                 ids: trackIds.join(",")
             },
             headers: req.app.get(spotifyWebHeaders)
-        }).then(({ data }) => data.tracks);
+        }).then(({ data }) => data.tracks).catch(error => {
+            console.error(error);
+            throw new Error(errorNames.SPOTIFY_API_ERROR);
+        });
     },
     search(query, req){
         return axios.get("https://api.spotify.com/v1/search", {
@@ -98,6 +126,9 @@ const SpotifyService = {
                 query: query,
                 total: tracks.total
             };
+        }).catch(error => {
+            console.error(error);
+            throw new Error(errorNames.SPOTIFY_API_ERROR);
         });
     }
 };

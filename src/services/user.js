@@ -1,4 +1,5 @@
 const { User } = require("../schema/models");
+const { errorNames } = require("../config/errors");
 
 const UserService = {
     editUser: (id, updatedUser) => {
@@ -7,10 +8,16 @@ const UserService = {
                 return User.findByIdAndUpdate(id, updatedUser, {
                     new: true,
                     runValidators: true
+                }).catch(error => {
+                    console.error(error);
+                    throw new Error(errorNames.SERVER_ERROR);
                 });
             } else {
-                throw new Error("ID parameter does not match returned user's ID");
+                throw new Error(errorNames.INVALID_USER);
             }
+        }).catch(error => {
+            console.error(error);
+            throw new Error(errorNames.SERVER_ERROR);
         });
     },
     deleteUser: (id, req) => {
@@ -18,14 +25,20 @@ const UserService = {
             if(foundUser && (foundUser._id == id)){
                 return User.findByIdAndDelete(id).then(deletedUser => {
                     req.session.destroy(error => {
-                        if(error) throw error;
+                        if(error) throw new Error(errorNames.SERVER_ERROR);
                     });
 
                     return deletedUser;
+                }).catch(error => {
+                    console.error(error);
+                    throw new Error(errorNames.SERVER_ERROR);
                 });
             } else {
-                throw new Error("ID parameter does not match returned user's ID");
+                throw new Error(errorNames.INVALID_USER);
             }
+        }).catch(error => {
+            console.error(error);
+            throw new Error(errorNames.SERVER_ERROR);
         });
     },
     getUsers: (userIDs = [], options) => {
@@ -42,13 +55,20 @@ const UserService = {
                 .limit(queryOptions.limit)
                 .then(users => {
                     return users;
+                })
+                .catch(error => {
+                    console.error(error);
+                    throw new Error(errorNames.SERVER_ERROR);
                 });
         } else {
             return [];
         }
     },
     getUserByID: id => {
-        return User.findById(id);
+        return User.findById(id).catch(error => {
+            console.error(error);
+            throw new Error(errorNames.SERVER_ERROR);
+        });
     },
     followUser: (userID, userToFollowID) => {
         return User.findById(userToFollowID).then(userToFollow => {
@@ -69,13 +89,19 @@ const UserService = {
                         )
                     ]).then(([ updatedUser ]) => {
                         return updatedUser;
+                    }).catch(error => {
+                        console.error(error);
+                        throw new Error(errorNames.SERVER_ERROR);
                     });
                 } else {
-                    throw new Error("You are already following this user");
+                    throw new Error(errorNames.INVALID_FOLLOW);
                 }
             } else {
-                throw new Error("An error occurred when looking up the user to follow");
+                throw new Error(errorNames.INVALID_USER);
             }
+        }).catch(error => {
+            console.error(error);
+            throw new Error(errorNames.SERVER_ERROR);
         });
     },
     unfollowUser: (userID, userToUnfollowID) => {
@@ -97,13 +123,19 @@ const UserService = {
                         )
                     ]).then(([ updatedUser ]) => {
                         return updatedUser;
+                    }).catch(error => {
+                        console.error(error);
+                        throw new Error(errorNames.SERVER_ERROR);
                     });
                 } else {
-                    throw new Error("You cannot unfollow a user you are not following");
+                    throw new Error(errorNames.INVALID_UNFOLLOW);
                 }
             } else {
-                throw new Error("An error occurred when looking up the user to unfollow");
+                throw new Error(errorNames.INVALID_USER);
             }
+        }).catch(error => {
+            console.error(error);
+            throw new Error(errorNames.SERVER_ERROR);
         });
     }
 };
