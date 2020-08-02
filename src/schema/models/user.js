@@ -37,7 +37,11 @@ const UserSchema = new Schema({
     following: [{
         type: Schema.Types.ObjectId,
         ref: "User"
-    }]
+    }],
+    isDeleted: {
+        type: Boolean,
+        default: false
+    }
 }, { timestamps: true });
 
 UserSchema.virtual("confirmPassword")

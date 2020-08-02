@@ -38,7 +38,7 @@ const UserMutations = {
             id: { type: new GraphQLNonNull(GraphQLID) }
         },
         resolve(parentValue, { id }, req){
-            return withAuthentication(req, id, () => UserService.deleteUser(id));
+            return withAuthentication(req, id, () => UserService.deleteUser(id, req));
         }
     },
     loginUser: {

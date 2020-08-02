@@ -13,10 +13,11 @@ const PostService = {
         const queryOptions = {
             cursorIndex: options.cursorIndex || 0,
             sort: options.sort || { createdAt: "desc" },
-            limit: options.limit || 12
+            limit: options.limit || 12,
+            isDeleted: options.isDeleted || false
         };
 
-        return Post.find({ user: userID })
+        return Post.find({ user: userID, isDeleted: queryOptions.isDeleted })
             .sort(queryOptions.sort)
             .skip(queryOptions.cursorIndex * queryOptions.limit)
             .limit(queryOptions.limit)
@@ -75,7 +76,7 @@ const PostService = {
     deletePost: (postID, userID) => {
         return Post.findById(postID).then(foundPost => {
             if(foundPost.user == userID){
-                return Post.findByIdAndDelete(postID).catch(error => {
+                return Post.findByIdAndUpdate(postID, { isDeleted: true }, { new: true }).catch(error => {
                     console.error(error);
                     throw new Error(errorNames.SERVER_ERROR);
                 });

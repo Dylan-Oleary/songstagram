@@ -1,6 +1,7 @@
 /* eslint-disable no-empty-pattern */
 const graphql = require("graphql");
 const {
+    GraphQLBoolean,
     GraphQLID,
     GraphQLList,
     GraphQLObjectType,
@@ -32,7 +33,8 @@ const UserType = new GraphQLObjectType({
                     const options = {
                         cursorIndex: followerCursorIndex,
                         sort: { createdAt: "desc" },
-                        limit: 20
+                        limit: 20,
+                        isDeleted: false
                     };
 
                     return UserService.getUsers(followers, options);
@@ -44,7 +46,8 @@ const UserType = new GraphQLObjectType({
                     const options = {
                         cursorIndex: followingCursorIndex,
                         sort: { createdAt: "desc" },
-                        limit: 20
+                        limit: 20,
+                        isDeleted: false
                     };
 
                     return UserService.getUsers(following, options);
@@ -56,7 +59,8 @@ const UserType = new GraphQLObjectType({
                     const options = {
                         cursorIndex: postCursorIndex,
                         sort: { createdAt: "desc" },
-                        limit: 12
+                        limit: 12,
+                        isDeleted: false
                     };
 
                     return PostService.getPostsByUser(id, options);
@@ -69,7 +73,8 @@ const UserType = new GraphQLObjectType({
                 }
             },
             createdAt: { type: GraphQLDateTime },
-            updatedAt: { type: GraphQLDateTime }
+            updatedAt: { type: GraphQLDateTime },
+            isDeleted: { type: GraphQLBoolean }
         };
     }
 });

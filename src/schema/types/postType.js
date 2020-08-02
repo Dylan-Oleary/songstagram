@@ -49,6 +49,7 @@ const PostType = new GraphQLObjectType({
                 }
             },
             isEdited: { type: GraphQLBoolean },
+            isDeleted: { type: GraphQLBoolean },
             createdAt: { type: GraphQLDateTime },
             updatedAt: { type: GraphQLDateTime }
         };

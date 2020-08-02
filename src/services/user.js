@@ -1,4 +1,4 @@
-const { User } = require("../schema/models");
+const { Post, User } = require("../schema/models");
 const { errorNames } = require("../config/errors");
 
 const UserService = {
@@ -23,7 +23,10 @@ const UserService = {
     deleteUser: (id, req) => {
         return User.findById(id).then(foundUser => {
             if(foundUser && (foundUser._id == id)){
-                return User.findByIdAndDelete(id).then(deletedUser => {
+                return Promise.all([
+                    User.findByIdAndUpdate(id, { isDeleted: true }, { new: true }),
+                    Post.updateMany({ user: id }, { $set: { isDeleted: true }}, { new: true })
+                ]).then(([ deletedUser ]) => {
                     req.session.destroy(error => {
                         if(error) throw new Error(errorNames.SERVER_ERROR);
                     });
@@ -46,10 +49,11 @@ const UserService = {
             const queryOptions = {
                 cursorIndex: options.cursorIndex || 0,
                 sort: options.sort || { createdAt: "desc" },
-                limit: options.limit || 20
+                limit: options.limit || 20,
+                isDeleted: options.isDeleted || false
             };
 
-            return User.find({ _id: { $in: userIDs } })
+            return User.find({ _id: { $in: userIDs }, isDeleted: queryOptions.isDeleted })
                 .sort(queryOptions.sort)
                 .skip(queryOptions.cursorIndex * queryOptions.limit)
                 .limit(queryOptions.limit)
