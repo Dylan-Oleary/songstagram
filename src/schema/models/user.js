@@ -14,14 +14,19 @@ const UserSchema = new Schema({
     },
     username: {
         type: String,
-        required: true
+        required: true,
+        trim: true,
+        unique: true
     },
     bio: {
         type: String
     },
     email: {
         type: String,
-        required: true
+        required: true,
+        trim: true,
+        lowercase: true,
+        unique: true
     },
     password: {
         type: String,

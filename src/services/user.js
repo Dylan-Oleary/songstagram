@@ -1,23 +1,69 @@
 const { Post, User } = require("../schema/models");
 const { errorNames } = require("../config/errors");
+const { validateEmail } = require("../lib/validation");
 
 const UserService = {
     editUser: (id, updatedUser) => {
-        return User.findById(id).then(foundUser => {
-            if(foundUser && foundUser._id == id){
-                return User.findByIdAndUpdate(id, updatedUser, {
-                    new: true,
-                    runValidators: true
+        const invalidFields = [
+            "followers",
+            "following",
+            "isDeleted",
+            "_id",
+            "createdAt",
+            "updatedAt",
+            "password"
+        ];
+
+        invalidFields.forEach(field => {
+            if(updatedUser[field]) throw new Error(errorNames.INVALID_FIELDS);
+        });
+
+        if(updatedUser.email){
+            if(!validateEmail(updatedUser.email)) throw new Error(errorNames.INVALID_EMAIL);
+        }
+
+        return User.findOne({
+            $or: [
+                { email: updatedUser.email || ""},
+                { username: updatedUser.username || "" }
+            ]
+        }).then(existingUser => {
+            if(existingUser){
+                let errors = [];
+
+                ["email","username"].forEach(key => {
+                    if(existingUser[key] === updatedUser[key]) errors.push(key);
+                });
+
+                if(errors.length > 1){
+                    throw new Error(errorNames.USERNAME_AND_EMAIL_TAKEN);
+                } else if(errors.indexOf("email") != -1){
+                    throw new Error(errorNames.EMAIL_ALREADY_TAKEN);
+                } else if(errors.indexOf("username") != -1){
+                    throw new Error(errorNames.USERNAME_ALREADY_TAKEN);
+                } else {
+                    throw new Error(errorNames.BAD_REQUEST);
+                }
+            } else {
+                return User.findById(id).then(foundUser => {
+                    if(foundUser && foundUser._id.toString() === id.toString()){
+                        return User.findByIdAndUpdate(id, updatedUser, {
+                            new: true,
+                            runValidators: true
+                        }).catch(error => {
+                            console.error(error);
+                            throw new Error(errorNames.SERVER_ERROR);
+                        });
+                    } else {
+                        throw new Error(errorNames.INVALID_USER);
+                    }
                 }).catch(error => {
                     console.error(error);
                     throw new Error(errorNames.SERVER_ERROR);
                 });
-            } else {
-                throw new Error(errorNames.INVALID_USER);
             }
         }).catch(error => {
-            console.error(error);
-            throw new Error(errorNames.SERVER_ERROR);
+            throw new Error(errorNames[error.message] || errorNames.SERVER_ERROR);
         });
     },
     deleteUser: (id, req) => {

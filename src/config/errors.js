@@ -3,9 +3,11 @@ const errorNames = {
     EMAIL_ALREADY_TAKEN: "EMAIL_ALREADY_TAKEN",
     MISSING_REQUIRED_FIELDS: "MISSING_REQUIRED_FIELDS",
     INVALID_CREDENTIALS: "INVALID_CREDENTIALS",
+    INVALID_EMAIL: "INVALID_EMAIL",
     INVALID_USER: "INVALID_USER",
     INVALID_LIKE: "INVALID_LIKE",
     INVALID_UNLIKE: "INVALID_UNLIKE",
+    INVALID_FIELDS: "INVALID_FIELDS",
     INVALID_FOLLOW: "INVALID_FOLLOW",
     INVALID_UNFOLLOW: "INVALID_UNFOLLOW",
     EMPTY_SPOTIFY_ID: "EMPTY_SPOTIFY_ID",
@@ -41,6 +43,10 @@ const errorTypes = {
         status: 401,
         message: "Invalid Credentials"
     },
+    INVALID_EMAIL: {
+        status: 400,
+        message: "Email must be a valid email"
+    },
     INVALID_USER: {
         status: 401,
         message: "Found user ID does not match given user ID"
@@ -56,6 +62,10 @@ const errorTypes = {
     INVALID_FOLLOW: {
         status: 400,
         message: "User cannot follow a user they currently follow"
+    },
+    INVALID_FIELDS: {
+        status: 400,
+        message: "User cannot edit restricted fields"
     },
     INVALID_UNFOLLOW: {
         status: 400,

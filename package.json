@@ -7,7 +7,9 @@
   "scripts": {
     "dev": "nodemon index.js",
     "lint": "eslint . && echo 'Lint Complete'",
-    "precommit-msg": "echo 'Running Pre-Commit Checks...' && exit 0"
+    "precommit-msg": "echo 'Running Pre-Commit Checks...' && exit 0",
+    "test": "jest -i --collect-coverage",
+    "test-watch": "jest -i --watch --collect-coverage"
   },
   "pre-commit": [
     "precommit-msg",
@@ -30,7 +32,9 @@
     "redis": "^3.0.2"
   },
   "devDependencies": {
+    "@shelf/jest-mongodb": "^1.2.1",
     "eslint": "^7.3.0",
+    "jest": "^26.2.2",
     "nodemon": "^2.0.4",
     "pre-commit": "^1.2.2"
   }
